@@ -57,23 +57,8 @@ import numpy as np
 from numpy import sqrt
 import os
 
-#start=timeit.default_timer()
-if len(sys.argv) ==1:
-    #sys.argv=['script_name',"*.vasp",'SG','GII','Mn5-O18', 'Mn5-O1', '13-17' ,'Mn5-O18-Mn8','a', '[Mn5-O18]+[Mn5-O19]', '([-1]-[-2])', 'V']
-    sys.argv=['script_name',"*.vasp",'GII', 'Ewald']
-    sys.argv=['script_name',"SMO*.vasp",'Mn1-O11', 'Mn1-O5-Mn4']
-
 
 ##### Part 1: Preparation. File lists and print label line  ###################
-## Collect list of files with glob
-#file_list=glob.glob(sys.argv[1])
-#file_list.sort()
-## Construct list_entries, which will be used for label of result
-## sys.argv[0] is name of script,
-## and sys.argv[1] is list of file names, so rename the labe as 'Filename'
-#list_entries=sys.argv[1::]
-#list_entries[0]='Filename'
-
 file_list=list()
 list_entries=list(['Filename'])
 for entry in sys.argv[1::]:
