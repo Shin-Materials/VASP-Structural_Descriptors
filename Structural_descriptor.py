@@ -57,8 +57,23 @@ import numpy as np
 from numpy import sqrt
 import os
 
+#start=timeit.default_timer()
+if len(sys.argv) ==1:
+    #sys.argv=['script_name',"*.vasp",'SG','GII','Mn5-O18', 'Mn5-O1', '13-17' ,'Mn5-O18-Mn8','a', '[Mn5-O18]+[Mn5-O19]', '([-1]-[-2])', 'V']
+    sys.argv=['script_name',"*.vasp",'GII', 'Ewald']
+    sys.argv=['script_name',"SMO*.vasp",'Mn1-O11', 'Mn1-O5-Mn4']
+
 
 ##### Part 1: Preparation. File lists and print label line  ###################
+## Collect list of files with glob
+#file_list=glob.glob(sys.argv[1])
+#file_list.sort()
+## Construct list_entries, which will be used for label of result
+## sys.argv[0] is name of script,
+## and sys.argv[1] is list of file names, so rename the labe as 'Filename'
+#list_entries=sys.argv[1::]
+#list_entries[0]='Filename'
+
 file_list=list()
 list_entries=list(['Filename'])
 for entry in sys.argv[1::]:
@@ -76,7 +91,7 @@ for entry in sys.argv[1::]:
 # Printing label
 # formatted for better outlook.
 # Position is determined by maximum length of file names
-print(list_entries[0].ljust(len(max(file_list,key=len))+2)+\
+print(list_entries[0].ljust(max(10,len(max(file_list,key=len))+2))+\
       '  '.join('%-6s' % entry for entry in list_entries[1::]))
 
 # list_errors is to collect error messages for user
@@ -258,7 +273,7 @@ for filename in file_list:
     
     #### Part 2-5: Printing values
     # Set starting position first, for better outlook
-    str_value_line=(list_values[0].ljust(len(max(file_list,key=len))+2))
+    str_value_line=(list_values[0].ljust(max(10,len(max(file_list,key=len))+2)))
     # iterate for each value, depending on value type
     for i, value in enumerate(list_values[1::]):
         # value case 1: string
