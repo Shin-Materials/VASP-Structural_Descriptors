@@ -44,7 +44,7 @@ Features to implement:
     8. How to extract Magmom --> Using outcar, in separate script
 """
 from pymatgen.io.vasp.outputs import Vasprun, Poscar
-from pymatgen import Structure
+from pymatgen.core import Structure
 from pymatgen.util.coord import pbc_shortest_vectors, get_angle
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.core.periodic_table import Element
@@ -91,8 +91,11 @@ for entry in sys.argv[1::]:
 # Printing label
 # formatted for better outlook.
 # Position is determined by maximum length of file names
-print(list_entries[0].ljust(max(10,len(max(file_list,key=len))+2))+\
-      '  '.join('%-6s' % entry for entry in list_entries[1::]))
+if len(file_list) > 0:
+    print(list_entries[0].ljust(len(max(file_list,key=len))+2)+\
+          '  '.join('%-6s' % entry for entry in list_entries[1::]))
+else:
+    print("There is no matching filename.")
 
 # list_errors is to collect error messages for user
 list_errors=[]
@@ -186,6 +189,11 @@ for filename in file_list:
                 current_value=SpacegroupAnalyzer(struct).get_space_group_symbol()
             elif str_entry == 'SG#':
                 current_value=SpacegroupAnalyzer(struct).get_space_group_number()
+            # option: Bond valence
+            # ex: BV(1)
+            elif str_entry[-3:] == '.BV':
+                atom1_str,dummy=re.split(r'\.',str_entry)
+                current_value=Bond_Valence(struct, label2site_index,atom1_str)
             #option: Band gap
             elif str_entry == 'Eg':
                 current_value=total_dos.get_gap()
@@ -231,7 +239,7 @@ for filename in file_list:
         else:  
             current_entry=sys.argv[i]
             # component is a singly callable value as descriptor
-            list_components=re.findall('\[[\w\-\_]+\]',current_entry)
+            list_components=re.findall(r'\[[\w\-\_]+\]',current_entry)
             
             # iteration for each componenet
             for component in list_components:
@@ -273,7 +281,7 @@ for filename in file_list:
     
     #### Part 2-5: Printing values
     # Set starting position first, for better outlook
-    str_value_line=(list_values[0].ljust(max(10,len(max(file_list,key=len))+2)))
+    str_value_line=(list_values[0].ljust(len(max(file_list,key=len))+2))
     # iterate for each value, depending on value type
     for i, value in enumerate(list_values[1::]):
         # value case 1: string
