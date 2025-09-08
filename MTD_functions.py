@@ -9,10 +9,9 @@ from pymatgen.io.vasp.outputs import Vasprun, Poscar
 from pymatgen.core.periodic_table import Element
 #from pymatgen.electronic_structure.core import Spin
 #from pymatgen.core.structure import Structure
-from pymatgen import Structure
+from pymatgen.core import Structure
 from pymatgen.util.coord import pbc_shortest_vectors, get_angle
 from math import log10, floor
-import os
 import sys
 import re
 import numpy as np
@@ -28,7 +27,7 @@ bv_analyzer=BVAnalyzer(max_radius=4)
 def convert_site_index(label2site_index,str_atom):
     """
     input: label2site_index -- dictionary defined in script
-        str_atom -- str, atom label like Fe1, or could be user index.
+        str_atom -- str, atom label like Fe1, or could be user index (starting from 1).
     output: pmg_site_index -- int, pymatgen index, starting from 0
     User index starts from 1, while python site index starts from 0.
     Based on the format, this function returns the pymatgen index
@@ -138,8 +137,7 @@ def Calc_Ewald(pmg_struct, formal_val=[]):
 ####################################################################
 
 # Read Bond valence dataset
-fileDir = os.path.dirname(os.path.realpath(sys.argv[0]))
-bv_data = pd.read_csv(os.path.join(fileDir,"Bond_valences2016.csv"))
+bv_data = pd.read_csv("Bond_valences2016.csv")
 # Use element names and valences to lookup bond valence
 def get_bv_params(cation, anion, cat_val, an_val):
     bond_val_list = bv_data[(bv_data['Atom1'] == cation) & (bv_data['Atom1_valence'] == cat_val)\
@@ -183,7 +181,37 @@ def gii_compute(pmg_struct, formal_val=[]):
     return GII_val
 
 
+def Bond_Valence(pmg_struct,label2site_index, atom1_label,formal_val=[],cutoff = 3.5):
+    """
+    numbering is based on VESTA (ex: Sr1, etc)
+    """
+    # GET valence list
+    if len(formal_val)==0:
+        # bv_analyzer=BVAnalyzer(max_radius=4) #max_radius default is 4
+        formal_val=bv_analyzer.get_valences(pmg_struct)
 
+    #atom index
+    i=convert_site_index(label2site_index, atom1_label)
+    i_site = pmg_struct.sites[i]
+
+    #print(formal_val)
+    bv_atom=0
+    for j,j_site in enumerate(pmg_struct.sites):
+        site_distance=pmg_struct.get_distance(i,j)
+        #conditions: exclude itself, only pairs within cufoff range, and only cation-anion pairs 
+        if site_distance > 0 \
+        and site_distance <=cutoff \
+        and formal_val[i]*formal_val[j] < 0:
+            params_df=bv_data[(bv_data['Atom1'] == str(i_site.specie)) & (bv_data['Atom1_valence'] == formal_val[i])\
+             & (bv_data['Atom2'] == str(j_site.specie)) & (bv_data['Atom2_valence'] == formal_val[j])]
+            # I ignore the case of not having matched item
+            # Possible alternative can be made by adopting value from slightly different formal valence
+            if params_df.empty:
+                bv_atom += 0
+            else:
+                params=params_df.iloc[0]
+                bv_atom += np.exp((params['Ro']- site_distance)/params['B'])
+    return bv_atom
 
 
 # A function to calculate a generalized Goldschmidt tolerance factor for perovskites and RP phases
