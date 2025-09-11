@@ -7,10 +7,10 @@ Pymatgen-based python script to extract structural descriptors from vasprun.xml 
 ```
 python Structural_descriptor.py [filenames or entries]
 ```
-- [filename]: name of vasprun.xml file or POSCAR file (wildcard (*,?) is usable!)
+- `[filename]`: name of vasprun.xml file or POSCAR file (wildcard (*,?) is usable!)
     if you use xml file, you can extract band gap despite longer execution time
-- [entry or entries]: Descripor of user choice
-  - a, b, c, V: lattice parameters and volume
+- `[entries]`: Descriptors of user choice
+  - `a`, `b`, `c`, `V`: lattice parameters and volume
   - atom1-atom2: distance between two atoms are called with one dash (-)
     - atom can be designated as VESTA format or index number starting from 1.
     - Ex) In SrTiO3, Sr --> Sr1 or 1, Fe --> Fe1 or 2, O1 --> O1 or 3
