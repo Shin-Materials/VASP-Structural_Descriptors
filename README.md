@@ -24,6 +24,8 @@ python Structural_descriptor.py [filenames or entries]
   - `natom`: number of atoms in the structure
   - `Ewald`: Ewald summation of the given structure (nominal charge states will be automatically assigned)
   - `GII`: Global Instability Index (GII) captures instability of deviation from the ideal coordination environment. Parameters will be taken from 'Bond_Valcne2016.csv' file as reference.
+  - `atom1.BV`: bond valence of the atom1, calculated based on the same parameters used for GII. 
+      - Ex) `Sr1.BV`
   - Mathematical operation of descriptors:
      - If you format a descriptor or column with brackets (`[` and `]`), you can execute simple operations.
      - Ex) `[Fe5-O1]+[Fe5-O2]`: sum of bond length of Fe5-O1 and Fe5-O2
