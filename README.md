@@ -33,4 +33,4 @@ python Structural_descriptor.py [filenames or entries]
      - Ex) `[Fe5-O1]/[Fe5-O2`]: ratio of bond length between Fe5-O1 and Fe5-O2
      - Ex) `[1]`/`[2]`: ratio between 1th column value and 2nd column value
             (Note that 0th column is the filename column).
-     - Note: When you use this function in a Bash environment, you might need to envelop the entry with single quotation marks (') to avoid syntax error coming from parentheses.
+     - Note: If you want to use parentheses for complicated forms, you may want to enclose the expression with quotation marks (') to avoid syntax error coming from parentheses.
